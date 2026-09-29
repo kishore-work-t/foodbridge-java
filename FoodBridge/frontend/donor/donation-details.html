@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Details - FoodBridge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <aside class="sidebar bg-white border-end" id="sidebar-wrapper">
+            <div class="sidebar-heading p-3 border-bottom">
+                <a href="../index.html" class="text-decoration-none">
+                    <i class="bi bi-heart-fill text-danger me-2"></i>
+                    <span class="fw-bold fs-5 text-success">FoodBridge</span>
+                </a>
+            </div>
+            <div class="list-group list-group-flush p-3">
+                <a href="donor-dashboard.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+                <a href="create-donation.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-plus-circle me-2"></i>Create Donation
+                </a>
+                <a href="my-donations.html" class="list-group-item list-group-item-action active">
+                    <i class="bi bi-box-seam me-2"></i>My Donations
+                </a>
+                <a href="requests.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-inbox me-2"></i>Requests
+                </a>
+                <a href="donor-profile.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-person me-2"></i>Profile
+                </a>
+            </div>
+            <div class="p-3 border-top">
+                <button class="btn btn-outline-danger w-100" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-fill" id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div class="container-fluid px-4">
+                    <button class="btn btn-link text-decoration-none d-md-none" id="sidebar-toggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <h4 class="fw-bold mb-0 ms-2">Donation Details</h4>
+                </div>
+            </nav>
+
+            <main class="p-4">
+                <div id="donation-content">
+                    <div class="text-center py-5">
+                        <div class="spinner spinner-lg mx-auto"></div>
+                        <p class="text-muted mt-3">Loading donation details...</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!requireAuth(['DONOR'])) return;
+            updateAuthUI();
+            initSidebar();
+            loadDonationDetails();
+        });
+
+        function initSidebar() {
+            const toggle = document.getElementById('sidebar-toggle');
+            const wrapper = document.getElementById('wrapper');
+            if (toggle) toggle.addEventListener('click', () => wrapper.classList.toggle('toggled'));
+        }
+
+        async function loadDonationDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            
+            if (!id) {
+                showToast('Donation ID not found', 'danger');
+                setTimeout(() => window.location.href = 'my-donations.html', 2000);
+                return;
+            }
+
+            try {
+                const donation = await api.get(`/donations/${id}`);
+                renderDonationDetails(donation);
+            } catch (error) {
+                document.getElementById('donation-content').innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">Failed to load donation</h5>
+                        <p class="text-muted">${error.message}</p>
+                        <a href="my-donations.html" class="btn btn-primary mt-3">Back to Donations</a>
+                    </div>
+                `;
+            }
+        }
+
+        function renderDonationDetails(d) {
+            const canEdit = d.status === 'AVAILABLE' || d.status === 'REQUESTED' || d.status === 'PARTIALLY_RESERVED';
+            const canCancel = canEdit;
+
+            document.getElementById('donation-content').innerHTML = `
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">${escapeHtml(d.foodName)}</h5>
+                                <span class="badge badge-${getStatusBadgeClass(d.status)}">${getStatusLabel(d.status)}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Food Type</label>
+                                        <p class="mb-0">${escapeHtml(d.foodType)}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Unit</label>
+                                        <p class="mb-0">${escapeHtml(d.unit)}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Total Quantity</label>
+                                        <p class="mb-0 fw-bold">${d.quantity} ${escapeHtml(d.unit)}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Available Quantity</label>
+                                        <p class="mb-0 fw-bold text-success">${d.availableQuantity} ${escapeHtml(d.unit)}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Reserved Quantity</label>
+                                        <p class="mb-0 fw-bold text-warning">${d.reservedQuantity} ${escapeHtml(d.unit)}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Preparation Time</label>
+                                        <p class="mb-0">${formatDate(d.preparationTime)}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Expiry Time</label>
+                                        <p class="mb-0 ${d.isExpired ? 'text-danger' : ''}">${formatDate(d.expiryTime)} ${d.isExpired ? '<span class="badge badge-danger ms-2">EXPIRED</span>' : ''}</p>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label text-muted small">Pickup Address</label>
+                                        <p class="mb-0">${escapeHtml(d.pickupAddress)}</p>
+                                    </div>
+                                    ${d.description ? `
+                                        <div class="col-12">
+                                            <label class="form-label text-muted small">Description</label>
+                                            <p class="mb-0">${escapeHtml(d.description)}</p>
+                                        </div>
+                                    ` : ''}
+                                </div>
+
+                                ${d.items && d.items.length > 0 ? `
+                                    <hr>
+                                    <h6 class="fw-bold mb-3">Food Items</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Item</th>
+                                                    <th>Quantity</th>
+                                                    <th>Unit</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${d.items.map(item => `
+                                                    <tr>
+                                                        <td>${escapeHtml(item.itemName)}</td>
+                                                        <td>${item.quantity}</td>
+                                                        <td>${escapeHtml(item.unit)}</td>
+                                                        <td>${escapeHtml(item.description || '-')}</td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ` : ''}
+
+                                <div class="d-flex gap-2 mt-4">
+                                    ${canEdit ? `
+                                        <a href="create-donation.html?edit=${d.id}" class="btn btn-outline-primary">
+                                            <i class="bi bi-pencil me-1"></i>Edit
+                                        </a>
+                                    ` : ''}
+                                    ${canCancel ? `
+                                        <button class="btn btn-outline-danger" onclick="confirmCancel('${d.id}')">
+                                            <i class="bi bi-x me-1"></i>Cancel
+                                        </button>
+                                    ` : ''}
+                                    <a href="my-donations.html" class="btn btn-secondary">Back to List</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h5 class="mb-0">Requests</h5>
+                            </div>
+                            <div class="card-body p-0" id="requests-list">
+                                <div class="text-center py-4">
+                                    <div class="spinner spinner-sm mx-auto"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            loadRequests(d.id);
+        }
+
+        async function loadRequests(donationId) {
+            try {
+                const requests = await api.get(`/requests/donation/${donationId}`);
+                renderRequests(requests);
+            } catch (error) {
+                document.getElementById('requests-list').innerHTML = `
+                    <div class="p-3 text-center text-muted">
+                        Failed to load requests: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function renderRequests(requests) {
+            const container = document.getElementById('requests-list');
+            
+            if (!requests || requests.length === 0) {
+                container.innerHTML = `
+                    <div class="p-3 text-center text-muted">
+                        <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                        <p class="mt-2 mb-0">No requests yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = requests.map(r => `
+                <div class="border-bottom p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <strong>${escapeHtml(r.receiverName)}</strong>
+                            <div class="text-muted small">${r.receiverEmail}</div>
+                        </div>
+                        <span class="badge badge-${getStatusBadgeClass(r.status)}">${getStatusLabel(r.status)}</span>
+                    </div>
+                    <div class="text-muted small mb-2">
+                        <i class="bi bi-box me-1"></i>${r.requestedQuantity} ${escapeHtml(r.unit || 'portions')} requested
+                    </div>
+                    <div class="text-muted small mb-2">
+                        <i class="bi bi-calendar me-1"></i>Requested: ${formatDate(r.requestedAt)}
+                        ${r.approvedAt ? ` | Approved: ${formatDate(r.approvedAt)}` : ''}
+                        ${r.rejectedAt ? ` | Rejected: ${formatDate(r.rejectedAt)}` : ''}
+                    </div>
+                    ${r.status === 'PENDING' ? `
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-success btn-sm flex-fill" onclick="approveRequest('${r.id}')">
+                                <i class="bi bi-check me-1"></i>Approve
+                            </button>
+                            <button class="btn btn-danger btn-sm flex-fill" onclick="rejectRequest('${r.id}')">
+                                <i class="bi bi-x me-1"></i>Reject
+                            </button>
+                        </div>
+                    ` : r.status === 'APPROVED' ? `
+                        <button class="btn btn-info btn-sm w-100" onclick="collectFood('${r.id}')">
+                            <i class="bi bi-truck me-1"></i>Mark as Collected
+                        </button>
+                    ` : r.status === 'COLLECTED' ? `
+                        <button class="btn btn-success btn-sm w-100" onclick="completeRequest('${r.id}')">
+                            <i class="bi bi-check-circle me-1"></i>Mark as Completed
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function approveRequest(id) {
+            if (!confirm('Approve this request?')) return;
+            try {
+                await api.patch(`/requests/${id}/approve`);
+                showToast('Request approved', 'success');
+                loadDonationDetails();
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+
+        async function rejectRequest(id) {
+            if (!confirm('Reject this request?')) return;
+            try {
+                await api.patch(`/requests/${id}/reject`);
+                showToast('Request rejected', 'success');
+                loadDonationDetails();
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+
+        async function collectFood(id) {
+            const quantity = prompt('Enter collected quantity:');
+            if (!quantity || isNaN(quantity)) return;
+            
+            try {
+                await api.patch(`/requests/${id}/collect`, { collectedQuantity: parseInt(quantity) });
+                showToast('Food marked as collected', 'success');
+                loadDonationDetails();
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+
+        async function completeRequest(id) {
+            if (!confirm('Mark this request as completed?')) return;
+            try {
+                await api.patch(`/requests/${id}/complete`);
+                showToast('Request completed', 'success');
+                loadDonationDetails();
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+
+        function confirmCancel(id) {
+            if (confirm('Cancel this donation? This action cannot be undone.')) {
+                cancelDonation(id);
+            }
+        }
+
+        async function cancelDonation(id) {
+            try {
+                await api.patch(`/donations/${id}/cancel`);
+                showToast('Donation cancelled', 'success');
+                setTimeout(() => window.location.href = 'my-donations.html', 1000);
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+    </script>
+</body>
+</html>

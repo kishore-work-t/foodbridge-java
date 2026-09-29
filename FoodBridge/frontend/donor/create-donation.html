@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Donation - FoodBridge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <aside class="sidebar bg-white border-end" id="sidebar-wrapper">
+            <div class="sidebar-heading p-3 border-bottom">
+                <a href="../index.html" class="text-decoration-none">
+                    <i class="bi bi-heart-fill text-danger me-2"></i>
+                    <span class="fw-bold fs-5 text-success">FoodBridge</span>
+                </a>
+            </div>
+            <div class="list-group list-group-flush p-3">
+                <a href="donor-dashboard.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+                <a href="create-donation.html" class="list-group-item list-group-item-action active">
+                    <i class="bi bi-plus-circle me-2"></i>Create Donation
+                </a>
+                <a href="my-donations.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-box-seam me-2"></i>My Donations
+                </a>
+                <a href="requests.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-inbox me-2"></i>Requests
+                </a>
+                <a href="donor-profile.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-person me-2"></i>Profile
+                </a>
+            </div>
+            <div class="p-3 border-top">
+                <button class="btn btn-outline-danger w-100" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-fill" id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div class="container-fluid px-4">
+                    <button class="btn btn-link text-decoration-none d-md-none" id="sidebar-toggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <h4 class="fw-bold mb-0 ms-2">Create Donation</h4>
+                </div>
+            </nav>
+
+            <main class="p-4">
+                <div class="row justify-content-center">
+                    <div class="col-xl-8">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-4">
+                                <form id="donation-form" novalidate>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="foodName">Food Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="foodName" name="foodName" required maxlength="200" placeholder="e.g., Chicken Biryani">
+                                                <div class="form-error" id="foodName-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="foodType">Food Type <span class="text-danger">*</span></label>
+                                                <select class="form-select form-control" id="foodType" name="foodType" required>
+                                                    <option value="">Select food type</option>
+                                                    <option value="Main Course">Main Course</option>
+                                                    <option value="Snacks">Snacks</option>
+                                                    <option value="Dessert">Dessert</option>
+                                                    <option value="Beverages">Beverages</option>
+                                                    <option value="Bakery">Bakery</option>
+                                                    <option value="Fruits & Vegetables">Fruits & Vegetables</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <div class="form-error" id="foodType-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="quantity">Quantity <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control" id="quantity" name="quantity" required min="1" placeholder="e.g., 50">
+                                                <div class="form-error" id="quantity-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="unit">Unit <span class="text-danger">*</span></label>
+                                                <select class="form-select form-control" id="unit" name="unit" required>
+                                                    <option value="">Select unit</option>
+                                                    <option value="portions">Portions</option>
+                                                    <option value="pieces">Pieces</option>
+                                                    <option value="kg">Kilograms</option>
+                                                    <option value="liters">Liters</option>
+                                                    <option value="boxes">Boxes</option>
+                                                    <option value="packets">Packets</option>
+                                                    <option value="trays">Trays</option>
+                                                    <option value="bowls">Bowls</option>
+                                                </select>
+                                                <div class="form-error" id="unit-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <label class="form-label" for="description">Description</label>
+                                                <textarea class="form-control" id="description" name="description" rows="3" maxlength="1000" placeholder="Describe the food items, ingredients, dietary info, etc."></textarea>
+                                                <div class="form-error" id="description-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="preparationTime">Preparation Time <span class="text-danger">*</span></label>
+                                                <input type="datetime-local" class="form-control" id="preparationTime" name="preparationTime" required>
+                                                <div class="form-error" id="preparationTime-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="expiryTime">Expiry Time <span class="text-danger">*</span></label>
+                                                <input type="datetime-local" class="form-control" id="expiryTime" name="expiryTime" required>
+                                                <div class="form-text">Must be after preparation time</div>
+                                                <div class="form-error" id="expiryTime-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <label class="form-label" for="pickupAddress">Pickup Address <span class="text-danger">*</span></label>
+                                                <textarea class="form-control" id="pickupAddress" name="pickupAddress" rows="2" required maxlength="500" placeholder="Full address for food pickup"></textarea>
+                                                <div class="form-error" id="pickupAddress-error"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-4">
+
+                                    <h5 class="fw-bold mb-3">Food Items (Optional)</h5>
+                                    <p class="text-muted small mb-3">Add individual items if this donation contains multiple food types</p>
+                                    
+                                    <div id="items-container"></div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mb-3" onclick="addItemRow()">
+                                        <i class="bi bi-plus me-1"></i>Add Item
+                                    </button>
+
+                                    <div class="d-flex justify-content-end gap-2 mt-4">
+                                        <a href="donor-dashboard.html" class="btn btn-outline-secondary">Cancel</a>
+                                        <button type="submit" class="btn btn-success" id="submit-btn">
+                                            <span class="btn-text">Create Donation</span>
+                                            <span class="btn-loading d-none"><span class="spinner spinner-sm me-2"></span>Creating...</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!requireAuth(['DONOR'])) return;
+            updateAuthUI();
+            initSidebar();
+            setDefaultTimes();
+            addItemRow();
+            document.getElementById('donation-form').addEventListener('submit', handleSubmit);
+        });
+
+        function initSidebar() {
+            const toggle = document.getElementById('sidebar-toggle');
+            const wrapper = document.getElementById('wrapper');
+            if (toggle) toggle.addEventListener('click', () => wrapper.classList.toggle('toggled'));
+        }
+
+        function setDefaultTimes() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('preparationTime').value = now.toISOString().slice(0, 16);
+
+            const expiry = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+            document.getElementById('expiryTime').value = expiry.toISOString().slice(0, 16);
+        }
+
+        function addItemRow(item = {}) {
+            const container = document.getElementById('items-container');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'card mb-2';
+            div.innerHTML = `
+                <div class="card-body p-3">
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <label class="form-label">Item Name</label>
+                            <input type="text" class="form-control" name="items[${index}].itemName" value="${escapeHtml(item.itemName || '')}" maxlength="200" placeholder="e.g., Chicken Biryani">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" class="form-control" name="items[${index}].quantity" value="${item.quantity || ''}" min="1" placeholder="10">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Unit</label>
+                            <select class="form-select form-control" name="items[${index}].unit">
+                                <option value="portions" ${item.unit === 'portions' ? 'selected' : ''}>Portions</option>
+                                <option value="pieces" ${item.unit === 'pieces' ? 'selected' : ''}>Pieces</option>
+                                <option value="kg" ${item.unit === 'kg' ? 'selected' : ''}>Kilograms</option>
+                                <option value="liters" ${item.unit === 'liters' ? 'selected' : ''}>Liters</option>
+                                <option value="boxes" ${item.unit === 'boxes' ? 'selected' : ''}>Boxes</option>
+                                <option value="packets" ${item.unit === 'packets' ? 'selected' : ''}>Packets</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="this.closest('.card').remove()">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-12">
+                            <label class="form-label">Description</label>
+                            <input type="text" class="form-control" name="items[${index}].description" value="${escapeHtml(item.description || '')}" maxlength="500" placeholder="Optional description">
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            clearErrors();
+
+            const formData = new FormData(e.target);
+            const items = [];
+
+            document.querySelectorAll('#items-container .card').forEach((card, index) => {
+                const name = card.querySelector(`[name="items[${index}].itemName"]`)?.value?.trim();
+                if (name) {
+                    items.push({
+                        itemName: name,
+                        quantity: parseInt(card.querySelector(`[name="items[${index}].quantity"]`)?.value) || 1,
+                        unit: card.querySelector(`[name="items[${index}].unit"]`)?.value,
+                        description: card.querySelector(`[name="items[${index}].description"]`)?.value?.trim() || null
+                    });
+                }
+            });
+
+            const data = {
+                foodName: formData.get('foodName')?.trim(),
+                foodType: formData.get('foodType'),
+                quantity: parseInt(formData.get('quantity')),
+                unit: formData.get('unit'),
+                preparationTime: formData.get('preparationTime'),
+                expiryTime: formData.get('expiryTime'),
+                pickupAddress: formData.get('pickupAddress')?.trim(),
+                description: formData.get('description')?.trim() || null,
+                items: items.length > 0 ? items : undefined
+            };
+
+            const btn = document.getElementById('submit-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+
+            let isValid = true;
+            if (!data.foodName) { showError('foodName', 'Food name is required'); isValid = false; }
+            if (!data.foodType) { showError('foodType', 'Food type is required'); isValid = false; }
+            if (!data.quantity || data.quantity < 1) { showError('quantity', 'Quantity must be at least 1'); isValid = false; }
+            if (!data.unit) { showError('unit', 'Unit is required'); isValid = false; }
+            if (!data.preparationTime) { showError('preparationTime', 'Preparation time is required'); isValid = false; }
+            if (!data.expiryTime) { showError('expiryTime', 'Expiry time is required'); isValid = false; }
+            if (!data.pickupAddress) { showError('pickupAddress', 'Pickup address is required'); isValid = false; }
+            if (data.preparationTime && data.expiryTime && new Date(data.expiryTime) <= new Date(data.preparationTime)) {
+                showError('expiryTime', 'Expiry time must be after preparation time'); isValid = false;
+            }
+
+            if (!isValid) return;
+
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+
+            try {
+                await api.post('/donations', data);
+                showToast('Donation created successfully!', 'success');
+                setTimeout(() => window.location.href = 'my-donations.html', 1500);
+            } catch (error) {
+                showToast(error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnLoading.classList.add('d-none');
+            }
+        }
+
+        function showError(field, message) {
+            const input = document.getElementById(field);
+            const errorDiv = document.getElementById(`${field}-error`);
+            if (input) input.classList.add('is-invalid');
+            if (errorDiv) errorDiv.textContent = message;
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+        }
+    </script>
+</body>
+</html>

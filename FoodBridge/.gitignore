@@ -1,0 +1,45 @@
+# Maven
+target/
+*.jar
+*.war
+*.ear
+*.class
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Application properties (local config)
+application-local.properties
+application-dev.properties
+application-prod.properties
+
+# Database
+*.sql
+*.db
+
+# Frontend build (if any)
+node_modules/
+dist/
+build/
+
+# Environment
+.env
+.env.local

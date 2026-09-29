@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Donations - FoodBridge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <aside class="sidebar bg-white border-end" id="sidebar-wrapper">
+            <div class="sidebar-heading p-3 border-bottom">
+                <a href="../index.html" class="text-decoration-none">
+                    <i class="bi bi-heart-fill text-danger me-2"></i>
+                    <span class="fw-bold fs-5 text-success">FoodBridge</span>
+                </a>
+            </div>
+            <div class="list-group list-group-flush p-3">
+                <a href="donor-dashboard.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+                <a href="create-donation.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-plus-circle me-2"></i>Create Donation
+                </a>
+                <a href="my-donations.html" class="list-group-item list-group-item-action active">
+                    <i class="bi bi-box-seam me-2"></i>My Donations
+                </a>
+                <a href="requests.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-inbox me-2"></i>Requests
+                </a>
+                <a href="donor-profile.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-person me-2"></i>Profile
+                </a>
+            </div>
+            <div class="p-3 border-top">
+                <button class="btn btn-outline-danger w-100" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-fill" id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div class="container-fluid px-4">
+                    <button class="btn btn-link text-decoration-none d-md-none" id="sidebar-toggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <h4 class="fw-bold mb-0 ms-2">My Donations</h4>
+                </div>
+            </nav>
+
+            <main class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="mb-0">All Donations</h5>
+                        <p class="text-muted small mb-0">Manage and track your food donations</p>
+                    </div>
+                    <a href="create-donation.html" class="btn btn-success">
+                        <i class="bi bi-plus me-1"></i>New Donation
+                    </a>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="donations-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Food Name</th>
+                                        <th>Type</th>
+                                        <th>Qty</th>
+                                        <th>Available</th>
+                                        <th>Expiry</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="text-center p-4 d-none" id="empty-state">
+                            <div class="empty-state">
+                                <i class="bi bi-box-seam empty-state-icon"></i>
+                                <h6 class="empty-state-title">No donations yet</h6>
+                                <p class="empty-state-text">Create your first food donation to get started</p>
+                                <a href="create-donation.html" class="btn btn-success">Create Donation</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!requireAuth(['DONOR'])) return;
+            updateAuthUI();
+            initSidebar();
+            loadDonations();
+        });
+
+        function initSidebar() {
+            const toggle = document.getElementById('sidebar-toggle');
+            const wrapper = document.getElementById('wrapper');
+            if (toggle) toggle.addEventListener('click', () => wrapper.classList.toggle('toggled'));
+        }
+
+        async function loadDonations() {
+            try {
+                const donations = await api.get('/donations/my-donations');
+                renderDonations(donations);
+            } catch (error) {
+                showToast('Failed to load donations: ' + error.message, 'danger');
+            }
+        }
+
+        function renderDonations(donations) {
+            const tbody = document.querySelector('#donations-table tbody');
+            const emptyDiv = document.getElementById('empty-state');
+
+            if (!donations || donations.length === 0) {
+                tbody.innerHTML = '';
+                emptyDiv.classList.remove('d-none');
+                return;
+            }
+
+            emptyDiv.classList.add('d-none');
+            tbody.innerHTML = donations.map(d => `
+                <tr>
+                    <td><strong>${escapeHtml(d.foodName)}</strong></td>
+                    <td>${escapeHtml(d.foodType)}</td>
+                    <td>${d.quantity} ${escapeHtml(d.unit)}</td>
+                    <td><strong>${d.availableQuantity}</strong> ${escapeHtml(d.unit)}</td>
+                    <td>${formatDate(d.expiryTime)}</td>
+                    <td><span class="badge badge-${getStatusBadgeClass(d.status)}">${getStatusLabel(d.status)}</span></td>
+                    <td>${formatDateOnly(d.createdAt)}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="donation-details.html?id=${d.id}" class="btn btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            ${d.status === 'AVAILABLE' || d.status === 'REQUESTED' || d.status === 'PARTIALLY_RESERVED' ? `
+                                <button class="btn btn-outline-secondary" onclick="editDonation('${d.id}')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="confirmCancel('${d.id}')">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function editDonation(id) {
+            window.location.href = `create-donation.html?edit=${id}`;
+        }
+
+        function confirmCancel(id) {
+            if (confirm('Are you sure you want to cancel this donation? This action cannot be undone.')) {
+                cancelDonation(id);
+            }
+        }
+
+        async function cancelDonation(id) {
+            try {
+                await api.patch(`/donations/${id}/cancel`);
+                showToast('Donation cancelled successfully', 'success');
+                loadDonations();
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+    </script>
+</body>
+</html>

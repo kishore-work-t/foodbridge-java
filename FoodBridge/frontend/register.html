@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - FoodBridge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 text-success" href="index.html">
+                <i class="bi bi-heart-fill text-danger me-2"></i>FoodBridge
+            </a>
+        </div>
+    </nav>
+
+    <main class="min-vh-100 d-flex align-items-center py-5" style="margin-top: 72px;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-7">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-5">
+                            <div class="text-center mb-4">
+                                <h2 class="fw-bold">Create Your Account</h2>
+                                <p class="text-muted">Join FoodBridge and help reduce food waste</p>
+                            </div>
+
+                            <form id="register-form" novalidate>
+                                <div class="form-group">
+                                    <label class="form-label">Account Type <span class="text-danger">*</span></label>
+                                    <div class="d-flex gap-3">
+                                        <label class="btn btn-outline-primary flex-fill text-start p-3" style="border-radius: var(--border-radius);">
+                                            <input type="radio" name="role" value="DONOR" class="d-none" required>
+                                            <i class="bi bi-restaurant fs-4 d-block mb-1"></i>
+                                            <strong>Food Donor</strong>
+                                            <div class="small text-muted">Restaurants, hotels, canteens, individuals</div>
+                                        </label>
+                                        <label class="btn btn-outline-primary flex-fill text-start p-3" style="border-radius: var(--border-radius);">
+                                            <input type="radio" name="role" value="RECEIVER" class="d-none">
+                                            <i class="bi bi-people fs-4 d-block mb-1"></i>
+                                            <strong>NGO / Receiver</strong>
+                                            <div class="small text-muted">Verified charitable organizations</div>
+                                        </label>
+                                    </div>
+                                    <div class="form-error" id="role-error"></div>
+                                </div>
+
+                                <hr class="my-4">
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label" for="name">Full Name <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="name" name="name" required maxlength="100" placeholder="John Doe">
+                                            <div class="form-error" id="name-error"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label" for="email">Email Address <span class="text-danger">*</span></label>
+                                            <input type="email" class="form-control" id="email" name="email" required maxlength="150" placeholder="john@example.com">
+                                            <div class="form-error" id="email-error"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label" for="phone">Phone Number</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" maxlength="20" placeholder="+1 (555) 123-4567">
+                                            <div class="form-error" id="phone-error"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" id="password" name="password" required minlength="8" maxlength="100" placeholder="Min 8 characters">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')"><i class="bi bi-eye"></i></button>
+                                            </div>
+                                            <div class="form-error" id="password-error"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label" for="confirmPassword">Confirm Password <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('confirmPassword')"><i class="bi bi-eye"></i></button>
+                                            </div>
+                                            <div class="form-error" id="confirmPassword-error"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="ngo-fields" class="d-none">
+                                    <hr class="my-4">
+                                    <h5 class="fw-bold mb-3">Organization Details</h5>
+                                    <p class="text-muted small mb-4">Required for NGO accounts. Your organization will need admin verification before requesting food.</p>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="orgName">Organization Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="orgName" name="orgName" maxlength="200" placeholder="Helping Hands Foundation">
+                                                <div class="form-error" id="orgName-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="regNumber">Registration Number</label>
+                                                <input type="text" class="form-control" id="regNumber" name="regNumber" maxlength="100" placeholder="NGO123456">
+                                                <div class="form-error" id="regNumber-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="address">Address</label>
+                                                <input type="text" class="form-control" id="address" name="address" maxlength="500" placeholder="123 Main Street">
+                                                <div class="form-error" id="address-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="form-label" for="city">City</label>
+                                                <input type="text" class="form-control" id="city" name="city" maxlength="100" placeholder="New York">
+                                                <div class="form-error" id="city-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="form-label" for="state">State</label>
+                                                <input type="text" class="form-control" id="state" name="state" maxlength="100" placeholder="NY">
+                                                <div class="form-error" id="state-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="contactNumber">Contact Number</label>
+                                                <input type="tel" class="form-control" id="contactNumber" name="contactNumber" maxlength="20" placeholder="+1 (555) 123-4567">
+                                                <div class="form-error" id="contactNumber-error"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group form-check mt-3">
+                                    <input type="checkbox" class="form-check-input" id="terms" required>
+                                    <label class="form-check-label small" for="terms">
+                                        I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100 mt-2" id="register-btn">
+                                    <span class="btn-text">Create Account</span>
+                                    <span class="btn-loading d-none"><span class="spinner spinner-sm me-2"></span>Creating...</span>
+                                </button>
+                            </form>
+
+                            <div class="text-center mt-4">
+                                <p class="text-muted mb-0">Already have an account? 
+                                    <a href="login.html" class="fw-medium">Sign In</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-light py-3 mt-auto">
+        <div class="container text-center text-muted small">
+            FoodBridge - College Project Demonstration
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
+            const form = document.getElementById('register-form');
+            const roleRadios = document.querySelectorAll('input[name="role"]');
+            const ngoFields = document.getElementById('ngo-fields');
+
+            roleRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.value === 'RECEIVER') {
+                        ngoFields.classList.remove('d-none');
+                        ngoFields.querySelectorAll('input[required]').forEach(el => el.required = true);
+                    } else {
+                        ngoFields.classList.add('d-none');
+                        ngoFields.querySelectorAll('input[required]').forEach(el => el.required = false);
+                    }
+                });
+            });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const roleParam = urlParams.get('role');
+            if (roleParam === 'RECEIVER') {
+                document.querySelector('input[value="RECEIVER"]').checked = true;
+                ngoFields.classList.remove('d-none');
+                ngoFields.querySelectorAll('input[required]').forEach(el => el.required = true);
+            } else if (roleParam === 'DONOR') {
+                document.querySelector('input[value="DONOR"]').checked = true;
+            }
+
+            form.addEventListener('submit', handleRegister);
+        });
+
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = field.nextElementSibling.querySelector('i');
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            clearErrors();
+
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name').trim(),
+                email: formData.get('email').trim(),
+                phone: formData.get('phone')?.trim() || null,
+                password: formData.get('password'),
+                role: formData.get('role')
+            };
+
+            const btn = document.getElementById('register-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+
+            let isValid = true;
+
+            if (!data.name) { showError('name', 'Name is required'); isValid = false; }
+            if (!validateEmail(data.email)) { showError('email', 'Please enter a valid email address'); isValid = false; }
+            if (!data.password || data.password.length < 8) { showError('password', 'Password must be at least 8 characters'); isValid = false; }
+            if (data.password !== formData.get('confirmPassword')) { showError('confirmPassword', 'Passwords do not match'); isValid = false; }
+            if (!data.role) { showError('role', 'Please select an account type'); isValid = false; }
+
+            if (data.role === 'RECEIVER') {
+                const orgName = formData.get('orgName')?.trim();
+                if (!orgName) { showError('orgName', 'Organization name is required'); isValid = false; }
+                data.organizationName = orgName;
+                data.registrationNumber = formData.get('regNumber')?.trim() || null;
+                data.address = formData.get('address')?.trim() || null;
+                data.city = formData.get('city')?.trim() || null;
+                data.state = formData.get('state')?.trim() || null;
+                data.contactNumber = formData.get('contactNumber')?.trim() || null;
+            }
+
+            if (!isValid) return;
+
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+
+            try {
+                const response = await api.post('/auth/register', data);
+                api.setAuth(response.token, {
+                    id: response.id,
+                    name: response.name,
+                    email: response.email,
+                    role: response.role,
+                    status: response.status
+                });
+                showToast('Registration successful! Redirecting...', 'success');
+                setTimeout(() => redirectByRole(response.role), 1500);
+            } catch (error) {
+                if (error.message.includes('Email already registered')) {
+                    showError('email', 'This email is already registered');
+                } else {
+                    showToast(error.message, 'danger');
+                }
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnLoading.classList.add('d-none');
+            }
+        }
+
+        function redirectByRole(role) {
+            switch (role) {
+                case 'ADMIN':
+                    window.location.href = 'admin/admin-dashboard.html';
+                    break;
+                case 'DONOR':
+                    window.location.href = 'donor/donor-dashboard.html';
+                    break;
+                case 'RECEIVER':
+                    window.location.href = 'receiver/receiver-dashboard.html';
+                    break;
+                default:
+                    window.location.href = 'index.html';
+            }
+        }
+
+        function showError(field, message) {
+            const input = document.getElementById(field);
+            const errorDiv = document.getElementById(`${field}-error`);
+            if (input) input.classList.add('is-invalid');
+            if (errorDiv) errorDiv.textContent = message;
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+        }
+    </script>
+</body>
+</html>

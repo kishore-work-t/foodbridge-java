@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodBridge - Food Waste Donation & Distribution Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 text-success" href="index.html">
+                <i class="bi bi-heart-fill text-danger me-2"></i>FoodBridge
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#stats">Impact</a></li>
+                </ul>
+                <div id="auth-buttons" class="d-flex gap-2">
+                    <a href="login.html" class="btn btn-outline-primary">Login</a>
+                    <a href="register.html" class="btn btn-primary">Get Started</a>
+                </div>
+                <div id="user-menu" class="d-none d-flex align-items-center gap-3">
+                    <span id="user-name" class="fw-500"></span>
+                    <span id="user-role" class="badge bg-success"></span>
+                    <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100 pt-5">
+                <div class="col-lg-6">
+                    <span class="badge bg-light text-success fw-medium px-3 py-2 mb-3 fs-6">
+                        <i class="bi bi-award-fill me-1"></i> College Project Demonstration
+                    </span>
+                    <h1 class="display-3 fw-bold text-dark mb-4">
+                        Connecting Surplus Food<br>with Those Who Need It
+                    </h1>
+                    <p class="lead text-muted mb-4">
+                        FoodBridge is a full-stack platform that connects food donors with verified NGOs 
+                        to reduce food waste and fight hunger in our communities.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="register.html?role=DONOR" class="btn btn-success btn-lg px-4">
+                            <i class="bi bi-plus-circle me-2"></i>Become a Donor
+                        </a>
+                        <a href="register.html?role=RECEIVER" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-heart me-2"></i>Join as NGO
+                        </a>
+                    </div>
+                    <div class="mt-4 d-flex gap-4 text-muted small">
+                        <span><i class="bi bi-shield-check me-1"></i>Secure & Verified</span>
+                        <span><i class="bi bi-clock me-1"></i>Real-time Updates</span>
+                        <span><i class="bi bi-graph-up me-1"></i>Impact Tracking</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-5 mt-lg-0">
+                    <div class="hero-image text-center">
+                        <div class="position-relative d-inline-block">
+                            <div class="bg-success bg-opacity-10 rounded-4 p-5">
+                                <i class="bi bi-truck text-success" style="font-size: 8rem;"></i>
+                            </div>
+                            <div class="position-absolute top-0 start-50 translate-middle-x bg-white rounded-3 shadow p-3" style="min-width: 200px;">
+                                <div class="d-flex align-items-center gap-2 text-success mb-2">
+                                    <i class="bi bi-check-circle-fill fs-4"></i>
+                                    <span class="fw-bold">New Request</span>
+                                </div>
+                                <div class="text-muted small">20 portions of Chicken Biryani</div>
+                            </div>
+                            <div class="position-absolute bottom-0 end-0 translate-middle-y bg-white rounded-3 shadow p-3" style="min-width: 180px;">
+                                <div class="d-flex align-items-center gap-2 text-warning mb-2">
+                                    <i class="bi bi-clock-fill fs-4"></i>
+                                    <span class="fw-bold">Pending Approval</span>
+                                </div>
+                                <div class="text-muted small">Vegetable Fried Rice - 15 portions</div>
+                            </div>
+                            <div class="position-absolute top-50 end-0 translate-middle-y bg-white rounded-3 shadow p-3" style="min-width: 180px;">
+                                <div class="d-flex align-items-center gap-2 text-info mb-2">
+                                    <i class="bi bi-truck-fill fs-4"></i>
+                                    <span class="fw-bold">Ready for Pickup</span>
+                                </div>
+                                <div class="text-muted small">Assorted Sandwiches - 40 pieces</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="how-it-works" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">How FoodBridge Works</h2>
+                <p class="lead text-muted">Three simple steps to make an impact</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm text-center p-4">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                            <i class="bi bi-plus-square fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold">1. List Surplus Food</h4>
+                        <p class="text-muted">Donors (restaurants, hotels, canteens) list available surplus food with details like quantity, type, and pickup location.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm text-center p-4">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                            <i class="bi bi-search-heart fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold">2. Request & Approve</h4>
+                        <p class="text-muted">Verified NGOs browse available food, request what they need, and donors approve requests based on availability.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm text-center p-4">
+                        <div class="bg-info bg-opacity-10 text-info rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                            <i class="bi bi-truck fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold">3. Collect & Distribute</h4>
+                        <p class="text-muted">NGOs collect approved food from donors and distribute to beneficiaries. Track completion and impact.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Key Features</h2>
+                <p class="lead text-muted">Built for transparency, efficiency, and impact</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-shield-check text-success fs-1 mb-3"></i>
+                            <h5 class="fw-bold">Verified NGOs</h5>
+                            <p class="text-muted small">Admin verification ensures only legitimate organizations can request food.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-graph-up text-primary fs-1 mb-3"></i>
+                            <h5 class="fw-bold">Real-time Tracking</h5>
+                            <p class="text-muted small">Live dashboards show donation status, requests, and collection history.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-bell text-warning fs-1 mb-3"></i>
+                            <h5 class="fw-bold">Smart Notifications</h5>
+                            <p class="text-muted small">Instant alerts for new requests, approvals, expiring food, and collections.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-database text-info fs-1 mb-3"></i>
+                            <h5 class="fw-bold">Quantity Management</h5>
+                            <p class="text-muted small">Prevents over-allocation with real-time available quantity validation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stats" class="py-5 bg-success text-white">
+        <div class="container">
+            <div class="row g-4 text-center">
+                <div class="col-md-3">
+                    <div class="display-4 fw-bold" id="stat-donors">0</div>
+                    <div class="text-success bg-opacity-25">Registered Donors</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="display-4 fw-bold" id="stat-ngos">0</div>
+                    <div class="text-success bg-opacity-25">Verified NGOs</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="display-4 fw-bold" id="stat-donations">0</div>
+                    <div class="text-success bg-opacity-25">Total Donations</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="display-4 fw-bold" id="stat-portions">0</div>
+                    <div class="text-success bg-opacity-25">Portions Served</div>
+                </div>
+            </div>
+            <p class="text-center text-success bg-opacity-25 mt-3 small">* Statistics are demo data from the local database</p>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container text-center">
+            <h2 class="display-5 fw-bold mb-4">Ready to Make a Difference?</h2>
+            <p class="lead text-muted mb-5">Join FoodBridge today and help reduce food waste in your community</p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="register.html?role=DONOR" class="btn btn-success btn-lg px-5">
+                    <i class="bi bi-restaurant me-2"></i>Register as Donor
+                </a>
+                <a href="register.html?role=RECEIVER" class="btn btn-outline-success btn-lg px-5">
+                    <i class="bi bi-people me-2"></i>Register as NGO
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-heart-fill text-danger me-2"></i>FoodBridge</h5>
+                    <p class="text-white-50 small">A full-stack food waste donation and distribution management system built with Spring Boot, MySQL, and Bootstrap.</p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h6 class="fw-bold mb-3">For Donors</h6>
+                    <ul class="list-unstyled small text-white-50">
+                        <li class="mb-2"><a href="login.html" class="text-white-50 text-decoration-none">Donor Login</a></li>
+                        <li class="mb-2"><a href="register.html?role=DONOR" class="text-white-50 text-decoration-none">Register as Donor</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h6 class="fw-bold mb-3">For NGOs</h6>
+                    <ul class="list-unstyled small text-white-50">
+                        <li class="mb-2"><a href="login.html" class="text-white-50 text-decoration-none">NGO Login</a></li>
+                        <li class="mb-2"><a href="register.html?role=RECEIVER" class="text-white-50 text-decoration-none">Register as NGO</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h6 class="fw-bold mb-3">Demo Credentials</h6>
+                    <p class="small text-white-50">Password for all: <code>password123</code></p>
+                    <ul class="list-unstyled small text-white-50">
+                        <li>Admin: admin@foodbridge.com</li>
+                        <li>Donor: donor1@foodbridge.com</li>
+                        <li>NGO: receiver1@foodbridge.com</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="text-center text-white-50 small">
+                FoodBridge - College Project Demonstration | Built with Spring Boot 3.x, MySQL, Bootstrap 5
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
+            loadStats();
+        });
+
+        async function loadStats() {
+            try {
+                const res = await fetch('http://localhost:8080/api/dashboard/admin', {
+                    headers: api.getHeaders(false)
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('stat-donors').textContent = data.totalDonors || 0;
+                    document.getElementById('stat-ngos').textContent = data.verifiedOrganizations || 0;
+                    document.getElementById('stat-donations').textContent = data.totalDonations || 0;
+                    document.getElementById('stat-portions').textContent = data.completedCollections || 0;
+                }
+            } catch (e) {
+                console.log('Stats not available (backend not running)');
+            }
+        }
+    </script>
+</body>
+</html>
