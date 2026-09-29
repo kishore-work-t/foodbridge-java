@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Food - FoodBridge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <aside class="sidebar bg-white border-end" id="sidebar-wrapper">
+            <div class="sidebar-heading p-3 border-bottom">
+                <a href="../index.html" class="text-decoration-none">
+                    <i class="bi bi-heart-fill text-danger me-2"></i>
+                    <span class="fw-bold fs-5 text-success">FoodBridge</span>
+                </a>
+            </div>
+            <div class="list-group list-group-flush p-3">
+                <a href="receiver-dashboard.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+                <a href="available-food.html" class="list-group-item list-group-item-action active">
+                    <i class="bi bi-search-heart me-2"></i>Available Food
+                </a>
+                <a href="my-requests.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-inbox me-2"></i>My Requests
+                </a>
+                <a href="collection-history.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-truck me-2"></i>Collection History
+                </a>
+                <a href="receiver-profile.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-person me-2"></i>Profile
+                </a>
+            </div>
+            <div class="p-3 border-top">
+                <button class="btn btn-outline-danger w-100" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-fill" id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div class="container-fluid px-4">
+                    <button class="btn btn-link text-decoration-none d-md-none" id="sidebar-toggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <h4 class="fw-bold mb-0 ms-2">Available Food</h4>
+                </div>
+            </nav>
+
+            <main class="p-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <form id="filter-form" class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label" for="search">Search Food</label>
+                                <input type="text" class="form-control" id="search" name="search" placeholder="Food name...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="foodType">Food Type</label>
+                                <select class="form-select form-control" id="foodType" name="foodType">
+                                    <option value="">All Types</option>
+                                    <option value="Main Course">Main Course</option>
+                                    <option value="Snacks">Snacks</option>
+                                    <option value="Dessert">Dessert</option>
+                                    <option value="Beverages">Beverages</option>
+                                    <option value="Bakery">Bakery</option>
+                                    <option value="Fruits & Vegetables">Fruits & Vegetables</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="city">City</label>
+                                <input type="text" class="form-control" id="city" name="city" placeholder="City...">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label" for="sortBy">Sort By</label>
+                                <select class="form-select form-control" id="sortBy" name="sortBy">
+                                    <option value="expiry">Expiry Time</option>
+                                    <option value="newest">Newest First</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Filter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-0" id="food-list">
+                        <div class="text-center py-5">
+                            <div class="spinner spinner-lg mx-auto"></div>
+                            <p class="text-muted mt-3">Loading available food...</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="request-modal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h5 class="modal-title">Request Food</h5>
+                <button class="btn-close" data-modal-close></button>
+            </div>
+            <div class="modal-body">
+                <form id="request-form" novalidate>
+                    <input type="hidden" name="donationId" id="request-donation-id">
+                    <div class="text-center mb-4">
+                        <h6 id="request-food-name" class="fw-bold"></h6>
+                        <p class="text-muted small" id="request-food-details"></p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="requestedQuantity">Quantity to Request <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="requestedQuantity" name="requestedQuantity" required min="1">
+                            <span class="input-group-text" id="request-unit">portions</span>
+                        </div>
+                        <div class="form-text">Available: <span id="available-qty">0</span> <span id="available-unit">portions</span></div>
+                        <div class="form-error" id="requestedQuantity-error"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+                        <button type="submit" class="btn btn-success" id="submit-request-btn">
+                            <span class="btn-text">Submit Request</span>
+                            <span class="btn-loading d-none"><span class="spinner spinner-sm me-2"></span>Submitting...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!requireAuth(['RECEIVER'])) return;
+            updateAuthUI();
+            initSidebar();
+            loadFood();
+            document.getElementById('filter-form').addEventListener('submit', handleFilter);
+            document.getElementById('request-form').addEventListener('submit', handleRequest);
+        });
+
+        function initSidebar() {
+            const toggle = document.getElementById('sidebar-toggle');
+            const wrapper = document.getElementById('wrapper');
+            if (toggle) toggle.addEventListener('click', () => wrapper.classList.toggle('toggled'));
+        }
+
+        let currentFilters = {};
+
+        async function loadFood() {
+            const container = document.getElementById('food-list');
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner spinner-lg mx-auto"></div>
+                    <p class="text-muted mt-3">Loading available food...</p>
+                </div>
+            `;
+
+            try {
+                const params = new URLSearchParams();
+                if (currentFilters.search) params.append('search', currentFilters.search);
+                if (currentFilters.foodType) params.append('foodType', currentFilters.foodType);
+                if (currentFilters.city) params.append('city', currentFilters.city);
+                if (currentFilters.sortBy) params.append('sortBy', currentFilters.sortBy);
+
+                const food = await api.get(`/donations/filter?${params.toString()}`);
+                renderFood(food);
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="text-center p-5">
+                        <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">Failed to load food</h5>
+                        <p class="text-muted">${error.message}</p>
+                        <button class="btn btn-primary mt-3" onclick="loadFood()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function handleFilter(e) {
+            e.preventDefault();
+            currentFilters = {
+                search: document.getElementById('search').value.trim(),
+                foodType: document.getElementById('foodType').value,
+                city: document.getElementById('city').value.trim(),
+                sortBy: document.getElementById('sortBy').value
+            };
+            loadFood();
+        }
+
+        function renderFood(food) {
+            const container = document.getElementById('food-list');
+
+            if (!food || food.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-5">
+                        <i class="bi bi-box-seam text-muted" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">No food found</h5>
+                        <p class="text-muted">Try adjusting your filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 40%">Food</th>
+                                <th>Type</th>
+                                <th>Available</th>
+                                <th>Location</th>
+                                <th>Expiry</th>
+                                <th>Status</th>
+                                <th style="width: 120px">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${food.map(d => `
+                                <tr>
+                                    <td>
+                                        <strong>${escapeHtml(d.foodName)}</strong>
+                                        ${d.description ? `<div class="text-muted small">${escapeHtml(d.description.substring(0, 80))}${d.description.length > 80 ? '...' : ''}</div>` : ''}
+                                    </td>
+                                    <td>${escapeHtml(d.foodType)}</td>
+                                    <td><strong>${d.availableQuantity}</strong> ${escapeHtml(d.unit)}</td>
+                                    <td>${escapeHtml(d.pickupAddress)}</td>
+                                    <td>${formatDate(d.expiryTime)}</td>
+                                    <td><span class="badge badge-${getStatusBadgeClass(d.status)}">${getStatusLabel(d.status)}</span></td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm" 
+                                                onclick="openRequestModal('${d.id}', '${escapeHtml(d.foodName)}', ${d.availableQuantity}, '${escapeHtml(d.unit)}', '${escapeHtml(d.foodType)}', '${escapeHtml(d.pickupAddress)}', '${formatDate(d.expiryTime)}')"
+                                                ${d.status !== 'AVAILABLE' && d.status !== 'REQUESTED' && d.status !== 'PARTIALLY_RESERVED' ? 'disabled' : ''}>
+                                            <i class="bi bi-heart me-1"></i>Request
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function openRequestModal(id, name, availableQty, unit, type, address, expiry) {
+            document.getElementById('request-donation-id').value = id;
+            document.getElementById('request-food-name').textContent = name;
+            document.getElementById('request-food-details').innerHTML = `${type} | ${availableQty} ${unit} available | ${address} | Expires: ${expiry}`;
+            document.getElementById('requestedQuantity').max = availableQty;
+            document.getElementById('requestedQuantity').value = Math.min(1, availableQty);
+            document.getElementById('request-unit').textContent = unit;
+            document.getElementById('available-qty').textContent = availableQty;
+            document.getElementById('available-unit').textContent = unit;
+            document.getElementById('requestedQuantity-error').textContent = '';
+            document.getElementById('requestedQuantity').classList.remove('is-invalid');
+            
+            showModal('request-modal');
+        }
+
+        async function handleRequest(e) {
+            e.preventDefault();
+            
+            const donationId = document.getElementById('request-donation-id').value;
+            const requestedQuantity = parseInt(document.getElementById('requestedQuantity').value);
+            const maxQty = parseInt(document.getElementById('requestedQuantity').max);
+
+            if (!requestedQuantity || requestedQuantity < 1) {
+                showError('requestedQuantity', 'Please enter a valid quantity');
+                return;
+            }
+            if (requestedQuantity > maxQty) {
+                showError('requestedQuantity', `Quantity cannot exceed available (${maxQty})`);
+                return;
+            }
+
+            const btn = document.getElementById('submit-request-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+
+            try {
+                await api.post('/requests', { donationId, requestedQuantity });
+                hideModal('request-modal');
+                showToast('Request submitted successfully!', 'success');
+                loadFood();
+            } catch (error) {
+                showToast(error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnLoading.classList.add('d-none');
+            }
+        }
+
+        function showError(field, message) {
+            const input = document.getElementById(field);
+            const errorDiv = document.getElementById(`${field}-error`);
+            if (input) input.classList.add('is-invalid');
+            if (errorDiv) errorDiv.textContent = message;
+        }
+    </script>
+</body>
+</html>

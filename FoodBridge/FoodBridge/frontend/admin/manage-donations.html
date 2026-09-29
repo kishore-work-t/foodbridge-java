@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Donations - FoodBridge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <aside class="sidebar bg-white border-end" id="sidebar-wrapper">
+            <div class="sidebar-heading p-3 border-bottom">
+                <a href="../index.html" class="text-decoration-none">
+                    <i class="bi bi-heart-fill text-danger me-2"></i>
+                    <span class="fw-bold fs-5 text-success">FoodBridge</span>
+                </a>
+            </div>
+            <div class="list-group list-group-flush p-3">
+                <a href="admin-dashboard.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+                <a href="manage-users.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-people me-2"></i>Manage Users
+                </a>
+                <a href="manage-organizations.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-building me-2"></i>Manage Organizations
+                </a>
+                <a href="manage-donations.html" class="list-group-item list-group-item-action active">
+                    <i class="bi bi-box-seam me-2"></i>Manage Donations
+                </a>
+                <a href="manage-requests.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-inbox me-2"></i>Manage Requests
+                </a>
+                <a href="reports.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-graph-up me-2"></i>Reports
+                </a>
+            </div>
+            <div class="p-3 border-top">
+                <button class="btn btn-outline-danger w-100" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-fill" id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div class="container-fluid px-4">
+                    <button class="btn btn-link text-decoration-none d-md-none" id="sidebar-toggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <h4 class="fw-bold mb-0 ms-2">Manage Donations</h4>
+                </div>
+            </nav>
+
+            <main class="p-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <form id="filter-form" class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label" for="search">Search</label>
+                                <input type="text" class="form-control" id="search" name="search" placeholder="Food name...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="status">Status</label>
+                                <select class="form-select form-control" id="status" name="status">
+                                    <option value="">All Status</option>
+                                    <option value="AVAILABLE">Available</option>
+                                    <option value="REQUESTED">Requested</option>
+                                    <option value="PARTIALLY_RESERVED">Partially Reserved</option>
+                                    <option value="FULLY_RESERVED">Fully Reserved</option>
+                                    <option value="EXPIRED">Expired</option>
+                                    <option value="CANCELLED">Cancelled</option>
+                                    <option value="COMPLETED">Completed</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Filter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-0" id="donations-container">
+                        <div class="text-center py-5">
+                            <div class="spinner spinner-lg mx-auto"></div>
+                            <p class="text-muted mt-3">Loading donations...</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!requireAuth(['ADMIN'])) return;
+            updateAuthUI();
+            initSidebar();
+            loadDonations();
+            document.getElementById('filter-form').addEventListener('submit', handleFilter);
+        });
+
+        function initSidebar() {
+            const toggle = document.getElementById('sidebar-toggle');
+            const wrapper = document.getElementById('wrapper');
+            if (toggle) toggle.addEventListener('click', () => wrapper.classList.toggle('toggled'));
+        }
+
+        let currentFilters = {};
+
+        async function loadDonations() {
+            const container = document.getElementById('donations-container');
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner spinner-lg mx-auto"></div>
+                    <p class="text-muted mt-3">Loading donations...</p>
+                </div>
+            `;
+
+            try {
+                const params = new URLSearchParams();
+                if (currentFilters.search) params.append('search', currentFilters.search);
+                if (currentFilters.status) params.append('status', currentFilters.status);
+
+                const donations = await api.get(`/donations?${params.toString()}`);
+                renderDonations(donations);
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="text-center p-5">
+                        <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">Failed to load donations</h5>
+                        <p class="text-muted">${error.message}</p>
+                        <button class="btn btn-primary mt-3" onclick="loadDonations()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function handleFilter(e) {
+            e.preventDefault();
+            currentFilters = {
+                search: document.getElementById('search').value.trim(),
+                status: document.getElementById('status').value
+            };
+            loadDonations();
+        }
+
+        function renderDonations(donations) {
+            const container = document.getElementById('donations-container');
+
+            if (!donations || donations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-5">
+                        <i class="bi bi-box-seam text-muted" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">No donations found</h5>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Food Name</th>
+                                <th>Donor</th>
+                                <th>Type</th>
+                                <th>Qty</th>
+                                <th>Available</th>
+                                <th>Expiry</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${donations.map(d => `
+                                <tr>
+                                    <td><strong>${escapeHtml(d.foodName)}</strong></td>
+                                    <td>${escapeHtml(d.donorName || 'Unknown')}</td>
+                                    <td>${escapeHtml(d.foodType)}</td>
+                                    <td>${d.quantity} ${escapeHtml(d.unit)}</td>
+                                    <td><strong>${d.availableQuantity}</strong> ${escapeHtml(d.unit)}</td>
+                                    <td>${formatDate(d.expiryTime)}</td>
+                                    <td><span class="badge badge-${getStatusBadgeClass(d.status)}">${getStatusLabel(d.status)}</span></td>
+                                    <td>${formatDateOnly(d.createdAt)}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="../donor/donation-details.html?id=${d.id}" class="btn btn-outline-primary" target="_blank">View</a>
+                                            ${d.status !== 'COMPLETED' && d.status !== 'CANCELLED' ? `
+                                                <button class="btn btn-outline-danger" onclick="confirmDelete('${d.id}')">Delete</button>
+                                            ` : ''}
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function confirmDelete(id) {
+            if (confirm('Delete this donation? This action cannot be undone.')) {
+                deleteDonation(id);
+            }
+        }
+
+        async function deleteDonation(id) {
+            try {
+                await api.delete(`/donations/${id}`);
+                showToast('Donation deleted', 'success');
+                loadDonations();
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+    </script>
+</body>
+</html>

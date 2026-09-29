@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - FoodBridge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <aside class="sidebar bg-white border-end" id="sidebar-wrapper">
+            <div class="sidebar-heading p-3 border-bottom">
+                <a href="../index.html" class="text-decoration-none">
+                    <i class="bi bi-heart-fill text-danger me-2"></i>
+                    <span class="fw-bold fs-5 text-success">FoodBridge</span>
+                </a>
+            </div>
+            <div class="list-group list-group-flush p-3">
+                <a href="receiver-dashboard.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+                <a href="available-food.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-search-heart me-2"></i>Available Food
+                </a>
+                <a href="my-requests.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-inbox me-2"></i>My Requests
+                </a>
+                <a href="collection-history.html" class="list-group-item list-group-item-action">
+                    <i class="bi bi-truck me-2"></i>Collection History
+                </a>
+                <a href="receiver-profile.html" class="list-group-item list-group-item-action active">
+                    <i class="bi bi-person me-2"></i>Profile
+                </a>
+            </div>
+            <div class="p-3 border-top">
+                <button class="btn btn-outline-danger w-100" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-fill" id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div class="container-fluid px-4">
+                    <button class="btn btn-link text-decoration-none d-md-none" id="sidebar-toggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <h4 class="fw-bold mb-0 ms-2">Profile</h4>
+                </div>
+            </nav>
+
+            <main class="p-4">
+                <div class="row justify-content-center">
+                    <div class="col-xl-8">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                        <i class="bi bi-people fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0" id="org-name">Loading...</h5>
+                                        <span class="badge bg-info" id="verification-status">Loading...</span>
+                                    </div>
+                                </div>
+
+                                <h5 class="fw-bold mb-4">Account Information</h5>
+                                <form id="profile-form" novalidate>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="name">Full Name</label>
+                                                <input type="text" class="form-control" id="name" name="name" required maxlength="100">
+                                                <div class="form-error" id="name-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="email">Email Address</label>
+                                                <input type="email" class="form-control" id="email" name="email" required maxlength="150" readonly>
+                                                <div class="form-text">Email cannot be changed</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="phone">Phone Number</label>
+                                                <input type="tel" class="form-control" id="phone" name="phone" maxlength="20">
+                                                <div class="form-error" id="phone-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="role">Role</label>
+                                                <input type="text" class="form-control" id="role" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="status">Status</label>
+                                                <input type="text" class="form-control" id="status" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="createdAt">Member Since</label>
+                                                <input type="text" class="form-control" id="createdAt" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-success mt-3" id="save-btn">
+                                        <span class="btn-text">Save Changes</span>
+                                        <span class="btn-loading d-none"><span class="spinner spinner-sm me-2"></span>Saving...</span>
+                                    </button>
+                                </form>
+
+                                <hr class="my-4">
+
+                                <h5 class="fw-bold mb-4">Organization Details</h5>
+                                <form id="org-form" novalidate>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="orgName">Organization Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="orgName" name="orgName" required maxlength="200">
+                                                <div class="form-error" id="orgName-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="regNumber">Registration Number</label>
+                                                <input type="text" class="form-control" id="regNumber" name="regNumber" maxlength="100">
+                                                <div class="form-error" id="regNumber-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="address">Address</label>
+                                                <input type="text" class="form-control" id="address" name="address" maxlength="500">
+                                                <div class="form-error" id="address-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="form-label" for="city">City</label>
+                                                <input type="text" class="form-control" id="city" name="city" maxlength="100">
+                                                <div class="form-error" id="city-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="form-label" for="state">State</label>
+                                                <input type="text" class="form-control" id="state" name="state" maxlength="100">
+                                                <div class="form-error" id="state-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="contactNumber">Contact Number</label>
+                                                <input type="tel" class="form-control" id="contactNumber" name="contactNumber" maxlength="20">
+                                                <div class="form-error" id="contactNumber-error"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-info mt-3" id="org-save-btn">
+                                        <span class="btn-text">Update Organization</span>
+                                        <span class="btn-loading d-none"><span class="spinner spinner-sm me-2"></span>Saving...</span>
+                                    </button>
+                                </form>
+
+                                <hr class="my-4">
+
+                                <h5 class="fw-bold mb-4">Change Password</h5>
+                                <form id="password-form" novalidate>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="currentPassword">Current Password</label>
+                                                <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                                                <div class="form-error" id="currentPassword-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="newPassword">New Password</label>
+                                                <input type="password" class="form-control" id="newPassword" name="newPassword" required minlength="8">
+                                                <div class="form-error" id="newPassword-error"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="confirmNewPassword">Confirm New Password</label>
+                                                <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword" required>
+                                                <div class="form-error" id="confirmNewPassword-error"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-outline-primary mt-3" id="password-btn">
+                                        <span class="btn-text">Update Password</span>
+                                        <span class="btn-loading d-none"><span class="spinner spinner-sm me-2"></span>Updating...</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!requireAuth(['RECEIVER'])) return;
+            updateAuthUI();
+            initSidebar();
+            loadProfile();
+            document.getElementById('profile-form').addEventListener('submit', handleProfileUpdate);
+            document.getElementById('org-form').addEventListener('submit', handleOrgUpdate);
+            document.getElementById('password-form').addEventListener('submit', handlePasswordUpdate);
+        });
+
+        function initSidebar() {
+            const toggle = document.getElementById('sidebar-toggle');
+            const wrapper = document.getElementById('wrapper');
+            if (toggle) toggle.addEventListener('click', () => wrapper.classList.toggle('toggled'));
+        }
+
+        async function loadProfile() {
+            try {
+                const [user, org] = await Promise.all([
+                    api.get('/auth/me'),
+                    api.get('/organizations/me')
+                ]);
+
+                document.getElementById('name').value = user.name;
+                document.getElementById('email').value = user.email;
+                document.getElementById('phone').value = user.phone || '';
+                document.getElementById('role').value = user.role;
+                document.getElementById('status').value = user.status;
+                document.getElementById('createdAt').value = formatDate(user.createdAt);
+
+                document.getElementById('org-name').textContent = org.organizationName;
+                document.getElementById('verification-status').textContent = org.verificationStatus;
+                document.getElementById('verification-status').className = `badge ${getVerificationBadgeClass(org.verificationStatus)}`;
+
+                document.getElementById('orgName').value = org.organizationName;
+                document.getElementById('regNumber').value = org.registrationNumber || '';
+                document.getElementById('address').value = org.address || '';
+                document.getElementById('city').value = org.city || '';
+                document.getElementById('state').value = org.state || '';
+                document.getElementById('contactNumber').value = org.contactNumber || '';
+            } catch (error) {
+                showToast('Failed to load profile: ' + error.message, 'danger');
+            }
+        }
+
+        function getVerificationBadgeClass(status) {
+            switch (status) {
+                case 'VERIFIED': return 'bg-success';
+                case 'PENDING': return 'bg-warning text-dark';
+                case 'REJECTED': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            clearErrors('profile-form');
+
+            const data = {
+                name: document.getElementById('name').value.trim(),
+                phone: document.getElementById('phone').value.trim() || null
+            };
+
+            const btn = document.getElementById('save-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+
+            if (!data.name) { showError('name', 'Name is required'); return; }
+
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+
+            try {
+                await api.put('/users/me', data);
+                showToast('Profile updated successfully', 'success');
+            } catch (error) {
+                showToast(error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnLoading.classList.add('d-none');
+            }
+        }
+
+        async function handleOrgUpdate(e) {
+            e.preventDefault();
+            clearErrors('org-form');
+
+            const data = {
+                organizationName: document.getElementById('orgName').value.trim(),
+                registrationNumber: document.getElementById('regNumber').value.trim() || null,
+                address: document.getElementById('address').value.trim() || null,
+                city: document.getElementById('city').value.trim() || null,
+                state: document.getElementById('state').value.trim() || null,
+                contactNumber: document.getElementById('contactNumber').value.trim() || null
+            };
+
+            const btn = document.getElementById('org-save-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+
+            if (!data.organizationName) { showError('orgName', 'Organization name is required'); return; }
+
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+
+            try {
+                await api.put('/organizations/me', data);
+                showToast('Organization updated successfully', 'success');
+                loadProfile();
+            } catch (error) {
+                showToast(error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnLoading.classList.add('d-none');
+            }
+        }
+
+        async function handlePasswordUpdate(e) {
+            e.preventDefault();
+            clearErrors('password-form');
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+            const btn = document.getElementById('password-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+
+            if (!currentPassword) { showError('currentPassword', 'Current password is required'); return; }
+            if (!newPassword || newPassword.length < 8) { showError('newPassword', 'New password must be at least 8 characters'); return; }
+            if (newPassword !== confirmPassword) { showError('confirmNewPassword', 'Passwords do not match'); return; }
+
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+
+            try {
+                await api.post('/users/me/change-password', { currentPassword, newPassword });
+                showToast('Password updated successfully', 'success');
+                document.getElementById('password-form').reset();
+            } catch (error) {
+                showToast(error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnLoading.classList.add('d-none');
+            }
+        }
+
+        function showError(field, message) {
+            const input = document.getElementById(field);
+            const errorDiv = document.getElementById(`${field}-error`);
+            if (input) input.classList.add('is-invalid');
+            if (errorDiv) errorDiv.textContent = message;
+        }
+
+        function clearErrors(formId) {
+            document.getElementById(formId).querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.getElementById(formId).querySelectorAll('.form-error').forEach(el => el.textContent = '');
+        }
+    </script>
+</body>
+</html>
