@@ -330,6 +330,90 @@ CREATE → PENDING → APPROVED → COLLECTED → COMPLETED
 - Scheduled task runs every 5 minutes to update expired donations
 - Frontend displays expiry status clearly
 
+## 🧭 Codebase Architecture and Request Flow
+
+The application is split into a static frontend and a Spring Boot backend. The frontend sends JSON requests to REST controllers. Controllers delegate business rules to services, which use Spring Data repositories to persist JPA entities in MySQL.
+
+```mermaid
+flowchart LR
+    Browser[Browser]
+    Pages[HTML pages + CSS]
+    Client[frontend/js/api.js]
+    Filter[JWT authentication filter]
+    Controller[REST controllers]
+    Service[Service layer]
+    Repository[Spring Data repositories]
+    Entities[JPA entities]
+    Database[(MySQL)]
+    Notifications[Notification service]
+
+    Browser --> Pages
+    Pages --> Client
+    Client -->|HTTP / JSON + Bearer token| Filter
+    Filter --> Controller
+    Controller --> Service
+    Service --> Repository
+    Repository --> Entities
+    Entities --> Database
+    Service --> Notifications
+```
+
+### What each backend package does
+
+| Package | Responsibility |
+|---------|----------------|
+| `controller` | Defines HTTP routes, reads request parameters and bodies, and returns HTTP responses. |
+| `service` | Implements authorization checks and business rules, including ownership, verification, expiry, quantity, and state transitions. |
+| `repository` | Loads and saves entities using Spring Data JPA queries. |
+| `entity` | Defines the persistent domain model and its relationships. |
+| `dto` | Defines validated request and response payloads so controllers do not expose persistence entities directly. |
+| `security` | Configures stateless Spring Security, password encoding, user lookup, and JWT creation/validation. |
+| `exception` | Defines domain errors and converts exceptions to API error responses. |
+| `config` | Seeds initial demo data and runs scheduled application tasks. |
+
+### Example: creating a food request
+
+```mermaid
+sequenceDiagram
+    actor Receiver
+    participant Page as Receiver page
+    participant Client as api.js
+    participant Controller as RequestController
+    participant Service as FoodRequestService
+    participant Repositories as Repositories
+    participant DB as MySQL
+    participant Notice as NotificationService
+
+    Receiver->>Page: Submit donation and quantity
+    Page->>Client: POST /api/requests
+    Client->>Controller: JSON + JWT
+    Controller->>Service: createRequest(receiver, request)
+    Service->>Repositories: Check verification, donation, quantity, duplicate request
+    Repositories->>DB: Read current records
+    Service->>Repositories: Save PENDING request and update donation
+    Repositories->>DB: Persist changes
+    Service->>Notice: Notify donor
+    Controller-->>Client: Request response
+    Client-->>Page: Render result
+```
+
+The service layer is the source of truth for business rules. In particular, receivers must belong to a verified organization, the donation must be requestable and not expired, and the requested quantity cannot exceed the available quantity. The donor can then approve or reject the request, mark it collected, and complete the workflow.
+
+### Entity relationships
+
+```mermaid
+erDiagram
+    USER ||--o| ORGANIZATION : has
+    USER ||--o{ DONATION : creates
+    USER ||--o{ FOOD_REQUEST : submits
+    USER ||--o{ NOTIFICATION : receives
+    DONATION ||--o{ DONATION_ITEM : contains
+    DONATION ||--o{ FOOD_REQUEST : receives
+    FOOD_REQUEST ||--o| COLLECTION : records
+```
+
+`DataInitializer` creates sample accounts and sample domain data only when the user table is empty. This makes a newly initialized local database convenient for demonstrations; demo passwords should not be reused outside local development.
+
 ## 🧪 Testing
 
 Run backend tests:
