@@ -378,9 +378,27 @@ java -jar -Dspring.profiles.active=prod foodbridge-1.0.0.jar
 - Token expires in 24 hours (configurable)
 - User will be redirected to login automatically
 
-**Port Conflicts**
-- Backend: 8080 (change `server.port`)
-- Frontend: 5500 (change server port)
+## 🚀 Docker & Render Deployment
+
+FoodBridge is fully configured for deployment on [Render](https://render.com) using Docker containers and Render Blueprints.
+
+### Quick Start with Docker Compose
+Run the entire stack (MySQL + Spring Boot Backend + Nginx Frontend) locally with a single command:
+```bash
+docker compose up
+```
+- Frontend: `http://localhost:5500`
+- Backend API: `http://localhost:8080/api`
+- Health Check: `http://localhost:8080/api/health`
+
+### Deploying to Render
+1. Push your repository to GitHub.
+2. In Render Dashboard, click **New +** → **Blueprint** and select your repository.
+3. Render automatically loads [`render.yaml`](../render.yaml) and provisions:
+   - **PostgreSQL Database** (`foodbridge-db` on Render Free tier)
+   - **Backend Web Service** (Spring Boot 3 in Docker with dynamic port & DB translation)
+   - **Frontend Web Service** (Nginx container with `/api/` reverse proxy)
+4. For step-by-step instructions and manual deployment guide, see [RENDER_DEPLOYMENT.md](../RENDER_DEPLOYMENT.md).
 
 ## 🔮 Future Enhancements
 

@@ -1,7 +1,30 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+function resolveApiBaseUrl() {
+    if (typeof window !== 'undefined') {
+        if (window.__ENV__ && window.__ENV__.API_BASE_URL) {
+            return window.__ENV__.API_BASE_URL.replace(/\/+$/, '');
+        }
+        if (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) {
+            return window.APP_CONFIG.API_BASE_URL.replace(/\/+$/, '');
+        }
+        const storedUrl = localStorage.getItem('API_BASE_URL');
+        if (storedUrl) {
+            return storedUrl.replace(/\/+$/, '');
+        }
+        const hostname = window.location.hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
+            return 'http://localhost:8080/api';
+        }
+        // In production on Render or custom domain, default to relative /api (works with reverse proxy)
+        return '/api';
+    }
+    return 'http://localhost:8080/api';
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 class ApiClient {
     constructor() {
+        this.baseUrl = API_BASE_URL;
         this.token = localStorage.getItem('authToken');
         this.user = JSON.parse(localStorage.getItem('currentUser') || 'null');
     }
@@ -50,7 +73,8 @@ class ApiClient {
     }
 
     async request(endpoint, options = {}) {
-        const url = `${API_BASE_URL}${endpoint}`;
+        const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+        const url = `${this.baseUrl}${path}`;
         const config = {
             headers: this.getHeaders(options.auth !== false),
             ...options,
@@ -63,7 +87,8 @@ class ApiClient {
             return await this.handleResponse(response);
         } catch (error) {
             if (error instanceof TypeError && error.message.includes('fetch')) {
-                throw new Error('Network error. Please check if the server is running.');
+                console.error(`[FoodBridge] Network error connecting to ${url}`);
+                throw new Error(`Cannot connect to backend API at ${this.baseUrl}. Please check server status.`);
             }
             throw error;
         }
