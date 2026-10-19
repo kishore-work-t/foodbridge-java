@@ -5,36 +5,40 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class NotificationResponse {
+public class NotificationDtos {
 
-    private Long id;
-    private String title;
-    private String message;
-    private Notification.NotificationType type;
-    private Boolean isRead;
-    private LocalDateTime createdAt;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class NotificationResponse {
 
-    public static NotificationResponse from(Notification notification) {
-        return NotificationResponse.builder()
-                .id(notification.getId())
-                .title(notification.getTitle())
-                .message(notification.getMessage())
-                .type(notification.getType())
-                .isRead(notification.getIsRead())
-                .createdAt(notification.getCreatedAt())
-                .build();
+        private Long id;
+        private String title;
+        private String message;
+        private Notification.NotificationType type;
+        private Boolean isRead;
+        private LocalDateTime createdAt;
+
+        public static NotificationResponse from(Notification notification) {
+            return NotificationResponse.builder()
+                    .id(notification.getId())
+                    .title(notification.getTitle())
+                    .message(notification.getMessage())
+                    .type(notification.getType())
+                    .isRead(notification.getIsRead())
+                    .createdAt(notification.getCreatedAt())
+                    .build();
+        }
     }
-}
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class NotificationMarkReadRequest {
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class NotificationMarkReadRequest {
 
-    private Boolean read = true;
+        @Builder.Default
+        private Boolean read = true;
+    }
 }

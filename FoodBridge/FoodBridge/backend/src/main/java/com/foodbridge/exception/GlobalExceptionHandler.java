@@ -1,7 +1,7 @@
 package com.foodbridge.exception;
 
-import com.foodbridge.dto.ErrorResponse;
-import com.foodbridge.dto.ValidationErrorResponse;
+import com.foodbridge.dto.ErrorDtos.ErrorResponse;
+import com.foodbridge.dto.ErrorDtos.ValidationErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
