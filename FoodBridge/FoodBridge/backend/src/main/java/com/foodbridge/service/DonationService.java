@@ -88,12 +88,12 @@ public class DonationService {
                 .reservedQuantity(0)
                 .build();
 
-        donation = donationRepository.save(donation);
+        Donation savedDonation = donationRepository.save(donation);
 
         if (request.getItems() != null && !request.getItems().isEmpty()) {
             List<DonationItem> items = request.getItems().stream()
                     .map(itemReq -> DonationItem.builder()
-                            .donation(donation)
+                            .donation(savedDonation)
                             .itemName(itemReq.getItemName())
                             .quantity(itemReq.getQuantity())
                             .unit(itemReq.getUnit())
@@ -101,10 +101,10 @@ public class DonationService {
                             .build())
                     .toList();
             donationItemRepository.saveAll(items);
-            donation.setItems(items);
+            savedDonation.setItems(items);
         }
 
-        return DonationDtos.DonationResponse.from(donation);
+        return DonationDtos.DonationResponse.from(savedDonation);
     }
 
     @Transactional
@@ -164,8 +164,8 @@ public class DonationService {
             donation.setItems(items);
         }
 
-        donation = donationRepository.save(donation);
-        return DonationDtos.DonationResponse.from(donation);
+        Donation updatedDonation = donationRepository.save(donation);
+        return DonationDtos.DonationResponse.from(updatedDonation);
     }
 
     @Transactional
