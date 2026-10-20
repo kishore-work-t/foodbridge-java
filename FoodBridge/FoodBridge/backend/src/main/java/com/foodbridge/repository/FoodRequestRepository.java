@@ -37,7 +37,14 @@ public interface FoodRequestRepository extends JpaRepository<FoodRequest, Long> 
     @Query("SELECT r FROM FoodRequest r WHERE r.receiver = :receiver AND r.status IN :statuses ORDER BY r.requestedAt DESC")
     Page<FoodRequest> findByReceiverAndStatusInPaged(@Param("receiver") User receiver, @Param("statuses") List<FoodRequest.RequestStatus> statuses, Pageable pageable);
 
+    long countByStatus(FoodRequest.RequestStatus status);
+
+    long countByReceiver(User receiver);
+
     long countByReceiverAndStatus(User receiver, FoodRequest.RequestStatus status);
+
+    @Query("SELECT COUNT(r) FROM FoodRequest r WHERE r.donation.donor = :donor AND r.status IN :statuses")
+    long countByDonationAndStatusIn(@Param("donor") User donor, @Param("statuses") List<FoodRequest.RequestStatus> statuses);
 
     long countByDonationAndStatus(Donation donation, FoodRequest.RequestStatus status);
 

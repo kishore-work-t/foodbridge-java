@@ -1,6 +1,7 @@
 package com.foodbridge.service;
 
 import com.foodbridge.dto.RequestDtos;
+import com.foodbridge.dto.OrganizationDtos;
 import com.foodbridge.entity.Donation;
 import com.foodbridge.entity.FoodRequest;
 import com.foodbridge.entity.User;
@@ -65,7 +66,7 @@ public class FoodRequestService {
 
     @Transactional
     public RequestDtos.FoodRequestResponse createRequest(User receiver, RequestDtos.FoodRequestCreateRequest request) {
-        OrganizationService.OrganizationResponse org = organizationService.getOrganizationByUser(receiver);
+        OrganizationDtos.OrganizationResponse org = organizationService.getOrganizationByUser(receiver);
         if (org.getVerificationStatus() != com.foodbridge.entity.Organization.VerificationStatus.VERIFIED) {
             throw new OrganizationNotVerifiedException("Your organization must be verified to request food");
         }

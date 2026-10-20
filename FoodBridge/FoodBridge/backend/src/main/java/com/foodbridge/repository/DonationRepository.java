@@ -36,7 +36,12 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT d FROM Donation d WHERE d.expiryTime < :now AND d.status NOT IN :excludedStatuses")
     List<Donation> findExpiredDonations(@Param("now") LocalDateTime now, @Param("excludedStatuses") List<Donation.DonationStatus> excludedStatuses);
 
+    long countByDonor(User donor);
+
     long countByDonorAndStatus(User donor, Donation.DonationStatus status);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.donor = :donor AND d.status IN :statuses")
+    long countByDonorAndStatusIn(@Param("donor") User donor, @Param("statuses") List<Donation.DonationStatus> statuses);
 
     long countByStatus(Donation.DonationStatus status);
 
