@@ -90,10 +90,10 @@ public class SecurityConfig {
         patterns.add("http://localhost:*");
         patterns.add("http://127.0.0.1:*");
 
-        if (origins.contains("*")) {
-            patterns.add("*");
-        } else {
-            configuration.setAllowedOrigins(origins);
+        for (String origin : origins) {
+            if (!patterns.contains(origin)) {
+                patterns.add(origin);
+            }
         }
         configuration.setAllowedOriginPatterns(patterns);
 

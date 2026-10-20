@@ -26,6 +26,13 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
+    # Favicon silent handler
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+        return 204;
+    }
+
     # Cache CSS and JS assets
     location ~* \.(?:css|js|woff2?|ttf|eot|png|jpg|jpeg|gif|ico|svg)$ {
         expires 7d;
@@ -33,9 +40,9 @@ server {
     }
 
     # Reverse proxy /api to backend service
-    location /api/ {
-        set $backend_upstream ${BACKEND_URL};
-        proxy_pass $backend_upstream/api/;
+    location /api {
+        set $backend_upstream "${BACKEND_URL}";
+        proxy_pass $backend_upstream$request_uri;
         proxy_http_version 1.1;
         proxy_ssl_server_name on;
         proxy_set_header Upgrade $http_upgrade;
